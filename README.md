@@ -1,44 +1,56 @@
 # Sylvestri Team Website
 
-Static marketing site for Ryan Sylvestri (RE/MAX Town & Country). The project uses the provided single-page HTML theme with bespoke CSS and JavaScript built from scratch.
+Static marketing site for Ryan Sylvestri (RE/MAX Town & Country). The source lives under `src/` and compiles into production-ready HTML/CSS/JS at the project root for simple static hosting.
 
 ## Project structure
 
 ```
 .
-├── index.html             # Main single-page layout
-├── assets
-│   ├── css
-│   │   └── styles.css     # Core styles and responsive rules
-│   └── js
-│       └── script.js      # Navigation, counters, utility behaviours
-└── scripts
-    └── autopush.sh        # Helper script for commit + push workflow
+├── index.html             # Generated from src/pages/index.html (do not edit manually)
+├── assets/                # Generated static assets
+├── src/
+│   ├── assets/            # Authoring versions of CSS/JS
+│   ├── pages/             # Page bodies with optional meta blocks
+│   ├── partials/          # Shared includes (nav, footer, etc.)
+│   └── layout.html        # Base HTML shell used by every page
+└── scripts/
+    ├── autopush.sh        # Helper script (build + commit + push)
+    └── build.js           # Static build pipeline
 ```
+
+## Commands
+
+```bash
+npm run build   # Compile src -> index.html + assets/
+npm run dev     # Rebuild, then serve at http://localhost:8000
+./scripts/autopush.sh "message"  # Build, commit, and push
+```
+
+> `autopush.sh` automatically runs `npm run build` before checking for changes, so output files are always in sync with the source.
+
+## Authoring new pages quickly
+
+1. Create a new file in `src/pages/`, e.g. `buyers.html`.
+2. (Optional) Add a meta comment at the top to override defaults:
+   ```html
+   <!--meta
+   {
+     "title": "Buyer Services | Sylvestri Team",
+     "description": "Personalised buyer representation across the Hudson Valley",
+     "keywords": "hudson valley buyer agent"
+   }
+   -->
+   ```
+3. Add the page-specific sections below the comment. The global navigation, footer, base styles, and scripts are injected automatically.
+4. Run `npm run build` (or let `./scripts/autopush.sh` do it) so the generated HTML appears at `buyers/index.html`.
+
+The navigation menu lives in `src/partials/nav.html`. Update it whenever you introduce a new top-level page so links stay in sync. Shared styling belongs in `src/assets/css/styles.css`, and behaviour in `src/assets/js/script.js`.
 
 ## Local preview
 
-Serve the site with any static HTTP server. For example:
+After running `npm run build`, use any static file server (such as `python3 -m http.server 8000`) from the repository root and browse to `http://localhost:8000`.
 
-```bash
-python3 -m http.server 8000
-```
+## Notes
 
-Then open `http://localhost:8000` in your browser.
-
-## Auto-push workflow
-
-Use the helper script whenever you are ready to publish changes:
-
-```bash
-./scripts/autopush.sh "commit message here"
-```
-
-The script stages all updates, commits with the provided message (falls back to a timestamped message if omitted), pushes to `origin`, and reports the status. It exits early when there is nothing new to commit.
-
-## Editing guidance
-
-- Keep assets organised inside the `assets` directory.
-- Maintain the existing visual language (typography, colour palette, glassmorphism accents) when extending the page.
-- Stick to semantic HTML sections so navigation anchors continue to work with the active-link highlighting in `script.js`.
-
+- `favicon.png` is referenced but not tracked—drop the icon in the project root when ready.
+- All generated files (`index.html`, `assets/`, additional page folders) are committed so the repo remains deploy-ready.

@@ -8,6 +8,11 @@ if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
   exit 1
 fi
 
+if [ -f package.json ]; then
+  echo "Running build..."
+  npm run build --silent
+fi
+
 if ! git status --short | grep -q '.'; then
   echo "No changes to commit."
   exit 0
